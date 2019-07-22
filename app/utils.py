@@ -1,6 +1,6 @@
 from aiohttp import ClientSession
 
-from app.settings import APP_PORT, CHANGED_URL
+from app.settings import LOCAL_URL
 
 
 async def get_page(url: str):
@@ -22,6 +22,6 @@ def add_trademark_in_soup(soup):
 def change_url_location_in_soup(soup):
     for a in soup.findAll('a'):
         try:
-            a['href'] = a['href'].replace("https://habr.com/ru/", CHANGED_URL)
+            a['href'] = a['href'].replace("https://habr.com/ru/", LOCAL_URL)
         except KeyError:
             pass

@@ -17,7 +17,7 @@ def trade_mark(text):
 
 
 def add_trademark_in_soup(soup):
-    pattern = r"(?<![А-я])[А-я]{6}(?![А-я])"
+    pattern = r"(?<![А-яёЁ])[А-я]{6}(?![А-яёЁ])"
     for element in soup.findAll(text=True):
         text = re.sub(pattern, trade_mark, element)
         element.replaceWith(text)

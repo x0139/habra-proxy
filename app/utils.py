@@ -1,3 +1,5 @@
+import re
+
 from aiohttp import ClientSession
 
 from app.settings import LOCAL_URL
@@ -9,13 +11,15 @@ async def get_page(url: str):
             return await resp.text()
 
 
-def trade_mark(word: str):
-    return "".join([word, '™'])
+def trade_mark(text):
+    s = text.group()
+    return "".join([s, '™'])
 
 
 def add_trademark_in_soup(soup):
+    pattern = r"(?<![А-я])[А-я]{6}(?![А-я])"
     for element in soup.findAll(text=True):
-        text = " ".join([trade_mark(x) if len(x) == 6 else x for x in element.split()])
+        text = re.sub(pattern, trade_mark, element)
         element.replaceWith(text)
 
 

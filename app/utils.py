@@ -29,3 +29,7 @@ def change_url_location_in_soup(soup):
             a['href'] = a['href'].replace("https://habr.com/ru/", LOCAL_URL)
         except KeyError:
             pass
+
+
+async def get_favicon(url):
+    pass

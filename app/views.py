@@ -17,10 +17,10 @@ async def index(request):
 
     habra_html = await get_page(url)
 
-    soup = BeautifulSoup(habra_html)
+    soup = BeautifulSoup(habra_html, "html5lib")
 
     add_trademark_in_soup(soup)
 
     change_url_location_in_soup(soup)
 
-    return Response(text=str(soup)[4:], content_type='text/html')
+    return Response(text=soup.prettify()[4:], content_type='text/html')

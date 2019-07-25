@@ -74,24 +74,18 @@ def save_to_static(file: bytes, filepath: str, filename: str):
 
 
 async def download_static(soup: BeautifulSoup):
-    # await _download('link', **{'href': True})
-    for link in soup.find_all('link', href=True):
-        url = link['href']
-        if url.startswith(''):
-            url = urljoin(HABRA_URL, url)
-        file = await download_file(url)
-        filepath = get_filepath_from_url(url)[1:]
-        filename = get_filename_from_url(url)
-        save_to_static(file, filepath, filename)
+    async def _download(tag: str, **kwargs):
+        for link in soup.find_all(tag, **kwargs):
+            url = link[list(kwargs.keys())[0]]
+            if url.startswith(''):
+                url = urljoin(HABRA_URL, url)
+            file = await download_file(url)
+            filepath = get_filepath_from_url(url)[1:]
+            filename = get_filename_from_url(url)
+            save_to_static(file, filepath, filename)
 
-    for img in soup.find_all('img', src=True):
-        url = img['src']
-        if url.startswith(''):
-            url = urljoin(HABRA_URL, url)
-        file = await download_file(url)
-        filepath = get_filepath_from_url(url)
-        filename = get_filename_from_url(url)
-        save_to_static(file, filepath, filename)
+    await _download('link', **{'href': True})
+    await _download('img', **{'src': True})
 
 
 def change_static_location(soup: BeautifulSoup):

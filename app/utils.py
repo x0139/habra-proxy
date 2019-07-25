@@ -91,7 +91,7 @@ async def download_static(soup: BeautifulSoup):
 def change_static_location(soup: BeautifulSoup):
     for link in soup.findAll('link'):
         try:
-            if link['href'][:1] == '/':
+            if link['href'][:1] == '/' and link['href'][:2] != '/':
                 link['href'] = link['href'].replace('/', '/static/', 1)
             else:
                 link['href'] = link['href'].replace("https://habr.com/", "/static/")
@@ -101,8 +101,8 @@ def change_static_location(soup: BeautifulSoup):
 
     for img in soup.findAll('img'):
         try:
-            if img['src'][:1] == '/':
-                img['src'] = img['href'].replace('/', '/static/', 1)
+            if img['src'][:1] == '/' and img['src'][:2] != '//':
+                img['src'] = img['src'].replace('/', '/static/', 1)
             else:
                 img['src'] = img['src'].replace("https://habr.com/", "/static/")
 

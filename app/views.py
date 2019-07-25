@@ -1,11 +1,13 @@
+import os
 from urllib.parse import urljoin
 
 from aiohttp import web
 from aiohttp.web_response import Response
 from bs4 import BeautifulSoup
 
-from app.settings import HABRA_URL
-from app.utils import get_page, add_trademark_in_soup, change_url_location_in_soup, get_favicon
+from app.settings import HABRA_URL, STATIC_ROOT, HABRA_FAVICON
+from app.utils import get_page, add_trademark, change_url_location, download_static, \
+    change_static_location, download_favicon
 
 
 async def index(request):
@@ -21,13 +23,17 @@ async def index(request):
 
     soup = BeautifulSoup(habra_html, "html5lib")
 
-    add_trademark_in_soup(soup)
+    add_trademark(soup)
 
-    change_url_location_in_soup(soup)
+    change_url_location(soup)
+
+    await download_static(soup)
+    #
+    change_static_location(soup)
 
     return Response(text=soup.prettify()[4:], content_type='text/html')
 
 
 async def favicon(request):
-    favi = await get_favicon(HABRA_URL)
-    return web.FileResponse(favi.read())
+    favi = await download_favicon(HABRA_FAVICON)
+    return web.FileResponse(os.path.join(STATIC_ROOT, 'favicon.ico'))

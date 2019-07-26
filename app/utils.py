@@ -69,6 +69,4 @@ async def download_favicon(url: str):
 
 def change_use_xlink(soup):
     for use in soup.findAll('use'):
-        print(use)
         use['xlink:href'] = use['xlink:href'].replace('https://habr.com/images/1564133473/', '/static/images/')
-        print(use)

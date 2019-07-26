@@ -65,3 +65,10 @@ def save_to_static(file: bytes, local_filepath: str):
 async def download_favicon(url: str):
     file = await download_file(url)
     save_to_static(file, 'favicon.ico')
+
+
+def change_use_xlink(soup):
+    for use in soup.findAll('use'):
+        print(use)
+        use['xlink:href'] = use['xlink:href'].replace('https://habr.com/images/1564133473/', '/static/images/')
+        print(use)

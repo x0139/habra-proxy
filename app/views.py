@@ -19,7 +19,7 @@ async def index(request):
     path = request.match_info.get('path')
     url = urljoin(HABRA_URL, path)
 
-    habra_html = await get_page(url)
+    habra_html, status = await get_page(url)
 
     soup = BeautifulSoup(habra_html, "html5lib")
 
@@ -29,7 +29,7 @@ async def index(request):
 
     change_use_xlink(soup)
 
-    return Response(text=soup.prettify()[4:], content_type='text/html')
+    return Response(text=soup.prettify()[4:], content_type='text/html', status=status)
 
 
 async def favicon(request):

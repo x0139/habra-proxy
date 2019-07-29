@@ -13,7 +13,7 @@ from app.settings import LOCAL_URL, STATIC_ROOT, HABRA_URL
 async def get_page(url: str):
     async with ClientSession() as session:
         async with session.get(url) as resp:
-            return await resp.text()
+            return await resp.text(), resp.status
 
 
 def trade_mark(matched):
@@ -22,7 +22,7 @@ def trade_mark(matched):
 
 
 def add_trademark(soup: BeautifulSoup):
-    pattern = r"(?<![А-яёЁ])[А-я]{6}(?![А-яёЁ])"
+    pattern = r"(\b\w{6}\b)|(?<![А-яёЁ])[А-яёЁ]{6}(?![А-яёЁ])"
     for element in soup.findAll(text=True):
         text = re.sub(pattern, trade_mark, element)
         element.replaceWith(text)

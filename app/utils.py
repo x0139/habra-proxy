@@ -23,12 +23,25 @@ def trade_mark(matched):
 
 def add_trademark(soup: BeautifulSoup):
     pattern = r"(\b\w{6}\b)|(?<![А-яёЁ])[А-яёЁ]{6}(?![А-яёЁ])"
-    for element in soup.findAll(text=True):
-        text = re.sub(pattern, trade_mark, element)
-        element.replaceWith(text)
+
+    def title():
+        title = soup.find('title', text=True)
+        text = re.sub(pattern, trade_mark, title.string)
+        title.decompose()
+        new_tag = soup.new_tag("title")
+        new_tag.string = text
+        soup.head.insert(0, new_tag)
+
+    def body():
+        for element in soup.body(text=True):
+            text = re.sub(pattern, trade_mark, element)
+            element.replaceWith(text)
+
+    title()
+    body()
 
 
-def change_url_location(soup: BeautifulSoup):
+def change_a_href(soup: BeautifulSoup):
     for a in soup.findAll('a'):
         try:
             a['href'] = a['href'].replace("https://habr.com/ru/", LOCAL_URL)
@@ -64,9 +77,26 @@ def save_to_static(file: bytes, local_filepath: str):
 
 async def download_favicon(url: str):
     file = await download_file(url)
-    save_to_static(file, 'favicon.ico')
+    save_to_static(file, os.path.join(STATIC_ROOT, 'favicon.ico'))
 
 
-def change_use_xlink(soup):
+def change_static_location(soup: BeautifulSoup):
+    def _change_resource(tag: str, field):
+        for html_tag in soup.findAll(tag):
+            if html_tag[field][:1] == '/' and html_tag[field][:2] != '/':
+                try:
+                    html_tag[field] = html_tag[field].replace('/', '/static/', 1)
+                except KeyError:
+                    pass
+
+    _change_resource('link', 'href')
+
+
+def change_use_xlink(soup: BeautifulSoup):
     for use in soup.findAll('use'):
-        use['xlink:href'] = use['xlink:href'].replace('https://habr.com/images/1564133473/', '/static/images/')
+        use['xlink:href'] = use['xlink:href'].replace('https://habr.com/images/1564419171/', '/static/images/')
+
+
+def change_font_face_location(soup: BeautifulSoup):
+    for style in soup.findAll('style', attrs={'type': 'text/css'}):
+        style.string = style.string.replace('/fonts/', '/static/fonts/')

@@ -24,6 +24,8 @@ def trade_mark(matched):
 def add_trademark(soup: BeautifulSoup):
     pattern = r"(\b\w{6}\b)|(?<![А-яёЁ])[А-яёЁ]{6}(?![А-яёЁ])"
 
+    soup.exclude_tags = []
+
     def title():
         title = soup.find('title', text=True)
         text = re.sub(pattern, trade_mark, title.string)
@@ -42,11 +44,8 @@ def add_trademark(soup: BeautifulSoup):
 
 
 def change_a_href(soup: BeautifulSoup):
-    for a in soup.findAll('a'):
-        try:
-            a['href'] = a['href'].replace("https://habr.com/ru/", LOCAL_URL)
-        except KeyError:
-            pass
+    for a in soup.findAll('a', 'href'):
+        a['href'] = a['href'].replace("https://habr.com/ru/", LOCAL_URL)
 
 
 async def download_file(url: str) -> bytes:
@@ -82,12 +81,9 @@ async def download_favicon(url: str):
 
 def change_static_location(soup: BeautifulSoup):
     def _change_resource(tag: str, field):
-        for html_tag in soup.findAll(tag):
+        for html_tag in soup.findAll(tag, field):
             if html_tag[field][:1] == '/' and html_tag[field][:2] != '/':
-                try:
-                    html_tag[field] = html_tag[field].replace('/', '/static/', 1)
-                except KeyError:
-                    pass
+                html_tag[field] = html_tag[field].replace('/', '/static/', 1)
 
     _change_resource('link', 'href')
 

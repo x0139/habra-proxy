@@ -89,8 +89,11 @@ def change_static_location(soup: BeautifulSoup):
 
 
 def change_use_xlink(soup: BeautifulSoup):
+    pattern = '[\w-]+\.svg.+'
     for use in soup.findAll('use'):
-        use['xlink:href'] = use['xlink:href'].replace('https://habr.com/images/1564419171/', '/static/images/')
+        matched = re.findall(pattern, use['xlink:href'])
+        if matched:
+            use['xlink:href'] = "".join(['/static/images/', matched[0]])
 
 
 def change_font_face_location(soup: BeautifulSoup):

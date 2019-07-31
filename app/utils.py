@@ -44,7 +44,7 @@ def add_trademark(soup: BeautifulSoup):
 
 
 def change_a_href(soup: BeautifulSoup):
-    for a in soup.findAll('a', 'href'):
+    for a in soup.findAll('a', 'href' is not None):
         a['href'] = a['href'].replace("https://habr.com/ru/", LOCAL_URL)
 
 
@@ -81,7 +81,7 @@ async def download_favicon(url: str):
 
 def change_static_location(soup: BeautifulSoup):
     def _change_resource(tag: str, field):
-        for html_tag in soup.findAll(tag, field):
+        for html_tag in soup.findAll(tag, field is not None):
             if html_tag[field][:1] == '/' and html_tag[field][:2] != '/':
                 html_tag[field] = html_tag[field].replace('/', '/static/', 1)
 
